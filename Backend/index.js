@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
+import userRoute from "./routes/user.route.js";
 
 dotenv.config({});
 
@@ -26,6 +27,10 @@ const corsOptions = {
   credential: true,
 };
 app.use(cors(corsOptions));
+
+// get api
+app.use("/api/v1/user", userRoute);
+"http://localhost:8000/api/v1/user/register"
 
 app.listen(PORT, () => {
   connectDB();
