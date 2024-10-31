@@ -30,7 +30,7 @@ app.use(cors(corsOptions));
 
 // get api
 app.use("/api/v1/user", userRoute);
-"http://localhost:8000/api/v1/user/register"
+// "http://localhost:8000/api/v1/user/register"
 
 app.listen(PORT, () => {
   connectDB();

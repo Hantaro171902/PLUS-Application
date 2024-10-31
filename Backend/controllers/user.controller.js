@@ -1,8 +1,9 @@
-import { User } from "../model/user_model";
+import { User } from "../model/user_model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import getDataUri from "../utils/datauri";
-import cloudinary from "../utils/cloudinary";
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
+
 
 export const register = async (req, res) => {
   try {
@@ -71,7 +72,7 @@ export const login = async (req, res) => {
     };
 
     const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
-      expiresIn: "Id",
+      expiresIn: "1d",
     });
     return res
       .cookie("token", token, {
