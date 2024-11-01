@@ -5,7 +5,7 @@ import { toast } from "sonner"
 
 import React, { useState } from 'react'
 
-const Signup = () => {
+const Login = () => {
     const [input, setInput] = useState ({
         username:"",
         email:"",
@@ -20,7 +20,7 @@ const Signup = () => {
         e.prevenDefault();
         try {
             setLoading(true);
-            const res = await axios.post('http://localhost:8000/api/v1/user/register', input, {
+            const res = await axios.post('http://localhost:8000/api/v1/user/login', input, {
                 headers:{
                     'Content-Type':'application/json'
                 },
@@ -29,7 +29,6 @@ const Signup = () => {
             if(res.data.success) {
                 toast.success(res.data.message);
                 setInput({
-                    username:"",
                     email:"",
                     password:""
                 });
@@ -46,18 +45,8 @@ const Signup = () => {
             <form onSubmit={signupHandler} action="" className="shadow-lg flex flex-col gap-5 p-8">
                 <div>
                     <h1>LOGO</h1>
-                    <p>Signup to see photos & videos from your friends</p>
+                    <p>Login to see photos & videos from your friends</p>
                     
-                </div>
-                <div>
-                    <span className="font-medium">Username</span>
-                    <Input
-                        type="text"
-                        name="username"
-                        value={input.username}
-                        onChange={changeEventHandler}
-                        className="focus-visible:ring-transparent my-2"     
-                    />
                 </div>
                 <div>
                     <span className="font-medium">Email</span>
@@ -79,10 +68,10 @@ const Signup = () => {
                         className="focus-visible:ring-transparent my-2"     
                     />
                 </div>
-                <Button type="submit">Signup</Button>
+                <Button type="submit">Login</Button>
             </form>
         </div>
     )
 }
 
-export default Signup
+export default Login
