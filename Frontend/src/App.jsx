@@ -1,16 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { Button } from './components/ui/button'; // Adjust this according to your library's path
 import Signup from './components/Signup';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+const browserRouter = createBrowserRouter([
+  {
+    path:"/",
+    element:<MainLayout/>,
+    children:[
+      {
+        path:"/",
+        element:<Home/>
+      }
+    ]
+  },
+  {
+    path:"/login",
+    element:<Login/>
+  },
+  {
+    path:"/signup",
+    element:<Signup/>
+  }
+])
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-     <Signup/>
+     <RouterProvider router={browserRouter}/>
     </>
   )
 }
