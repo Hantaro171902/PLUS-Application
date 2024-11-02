@@ -71,7 +71,7 @@ const Post = () => {
         <span className="font-medium mr-2">usename</span>
         caption
       </p>
-      <span onClick={() => setOpen(true)}>View all 10 comments</span>
+      <span onClick={() => setOpen(true)} className="cursor-pointer text-sm text-gray-400">View all 10 comments</span>
       <CommentDialog open={open} setOpen={setOpen}/>
       <div>
         <input
