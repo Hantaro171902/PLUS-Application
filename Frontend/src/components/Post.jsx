@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import CommentDialog from "./CommentDialog";
 
-const Post = () => {
+const Post = ({post}) => {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -51,7 +51,7 @@ const Post = () => {
       </div>
       <img
         className="rounded-sm my-2 w-full aspect-square object-cover"
-        src="https://images.unsplash.com/photo-1721332154191-ba5f1534266e?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        src={post.image}
         alt="post_img"
       />
 
@@ -69,7 +69,7 @@ const Post = () => {
       <span className="font-medium block mb-2">1k likes</span>
       <p>
         <span className="font-medium mr-2">usename</span>
-        caption
+        {post.caption}
       </p>
       <span onClick={() => setOpen(true)} className="cursor-pointer text-sm text-gray-400">View all 10 comments</span>
       <CommentDialog open={open} setOpen={setOpen}/>
