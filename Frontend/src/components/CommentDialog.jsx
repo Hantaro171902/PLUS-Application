@@ -4,9 +4,11 @@ import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { FaAviato } from "react-icons/fa";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { MoreHorizontal } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
+  const { seletedPost } = useSelector((store) => store.post);
 
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
@@ -17,10 +19,9 @@ const CommentDialog = ({ open, setOpen }) => {
     }
   };
 
-  const sendMessageHandler = async => {
+  const sendMessageHandler = (async) => {
     alert(text);
-  }
-
+  };
 
   return (
     <Diaglog open={open}>
@@ -28,7 +29,7 @@ const CommentDialog = ({ open, setOpen }) => {
         <div className="flex flex-1">
           <div className="w-1/2">
             <img
-              src="https://images.unsplash.com/photo-1730396841380-f2be1db7ee4d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src={seletedPost?.image}
               alt="post_img"
               className="w-full h-full object-cover rounded-l-lg"
             />
@@ -40,13 +41,15 @@ const CommentDialog = ({ open, setOpen }) => {
             <div className="flex gap-3 items-center">
               <Link>
                 <Avatar>
-                  <AvatarImage src="" />
+                  <AvatarImage src={seletedPost?.author?.profilePicture} />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </Link>
 
               <div>
-                <Link className="font-semibold text-xs">usename</Link>
+                <Link className="font-semibold text-xs">
+                  {seletedPost?.author?.username}
+                </Link>
                 {/* <span className="text-gray-600 text-sm">Bio here...</span> */}
               </div>
             </div>
@@ -65,6 +68,9 @@ const CommentDialog = ({ open, setOpen }) => {
           </div>
           <hr />
           <div className="flex-1 overflow-y-auto max-h-96 p-4">
+            {
+              seletedPost?.comments.map((comment)=> <Comment key={comment._id} comment={comment}/>)
+            }
             comment ayenge
           </div>
           <div className="p-4">
@@ -76,7 +82,13 @@ const CommentDialog = ({ open, setOpen }) => {
                 onChange={changeEventHandler}
                 className="w-full outline-none border border-gray-300 p-2 rounded"
               />
-              <Button disabled={!text.trim} onClick={sendMessageHandler} variant="outline">Send</Button>
+              <Button
+                disabled={!text.trim}
+                onClick={sendMessageHandler}
+                variant="outline"
+              >
+                Send
+              </Button>
             </div>
           </div>
         </div>

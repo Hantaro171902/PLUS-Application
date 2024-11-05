@@ -9,7 +9,7 @@ import CommentDialog from "./CommentDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
-import { setPosts } from "@/redux/postSlice";
+import { setPosts, setSelectedPost } from "@/redux/postSlice";
 
 const Post = ({ post }) => {
   const [text, setText] = useState("");
@@ -55,6 +55,7 @@ const Post = ({ post }) => {
         );
         dispatch(setPosts(updatedPostData));
         toast.success(res.data.message);
+        setText("");
       }
     } catch (error) {
       console.log(error);
@@ -77,8 +78,8 @@ const Post = ({ post }) => {
         const updatedCommentData = [...comments, res.data.message];
         setComment(updatedCommentData);
 
-        const updatedPostData = posts.map(p=>
-          p._id === post._id ? {...p, comments:updatedCommentData} : p
+        const updatedPostData = posts.map((p) =>
+          p._id === post._id ? { ...p, comments: updatedCommentData } : p
         );
 
         dispatch(setPosts(updatedPostData));
@@ -167,7 +168,10 @@ const Post = ({ post }) => {
           )}
 
           <MessageCircle
-            onClick={() => setOpen(true)}
+            onClick={() => {
+              dispatch(setSelectedPost(post));
+              setOpen(true);
+            }}
             className="cursor-pointer hover:text-gray-600"
           />
           <Send className="cursor-pointer hover:text-gray-600" />
@@ -180,7 +184,10 @@ const Post = ({ post }) => {
         {post.caption}
       </p>
       <span
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          dispatch(setSelectedPost(post));
+          setOpen(true);
+        }}
         className="cursor-pointer text-sm text-gray-400"
       >
         View all {comment.length} comments
@@ -194,7 +201,14 @@ const Post = ({ post }) => {
           onChange={changeEventHandler}
           className="outline-none text-sm w-full"
         />
-        {text && <span onClick={commentHandler} className="text-[#38ADF8] cursor-pointer">Post</span>}
+        {text && (
+          <span
+            onClick={commentHandler}
+            className="text-[#38ADF8] cursor-pointer"
+          >
+            Post
+          </span>
+        )}
       </div>
     </div>
   );
