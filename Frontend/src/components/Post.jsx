@@ -18,6 +18,7 @@ const Post = ({ post }) => {
   const { posts } = useSelector((store) => store.post);
   const { like, setLiked } = useState(post.like.includes(user?._id) || false);
   const [postLike, setPostLike] = useState(post.likes.length);
+  const [comment, setComment] = useState(post.comments);
   const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
@@ -37,9 +38,51 @@ const Post = ({ post }) => {
         { withCredentials: true }
       );
       if (res.data.success) {
-        const updatedLikes = liked ? postLike -1 : postLike + 1;
+        const updatedLikes = liked ? postLike - 1 : postLike + 1;
         setPostLike();
         setLiked(!liked);
+
+        //  apne post ko update krunga
+        const updatedPostData = posts.map((p) =>
+          p._id === post.id
+            ? {
+                ...p,
+                likes: liked
+                  ? p.likes.filter((id) => id !== user._id)
+                  : [...p.likes, user._id],
+              }
+            : p
+        );
+        dispatch(setPosts(updatedPostData));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const commentHandler = async () => {
+    try {
+      const res = await axios.post(
+        `http://localhost:8000/api/v1/user/post/${post._id}/comment}`,
+        { text },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        const updatedCommentData = [...comments, res.data.message];
+        setComment(updatedCommentData);
+
+        const updatedPostData = posts.map(p=>
+          p._id === post._id ? {...p, comments:updatedCommentData} : p
+        );
+
+        dispatch(setPosts(updatedPostData));
+
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -108,11 +151,21 @@ const Post = ({ post }) => {
       />
 
       <div className="flex items-center justify-between my-2">
-        <div>
-          <FaRegHeart onClick={() => likeOrDislikeHandler(post._id)}
-            size={"22px"}
-            className="cursor-pointer hover:text-gray-600"
-          />
+        <div className="flex items-center gap-3">
+          {liked ? (
+            <FaHeart
+              onClick={() => likeOrDislikeHandler(post._id)}
+              size={"24"}
+              className="cursor-pointer text-red-600"
+            />
+          ) : (
+            <FaRegHeart
+              onClick={() => likeOrDislikeHandler(post._id)}
+              size={"22px"}
+              className="cursor-pointer hover:text-gray-600"
+            />
+          )}
+
           <MessageCircle
             onClick={() => setOpen(true)}
             className="cursor-pointer hover:text-gray-600"
@@ -130,7 +183,7 @@ const Post = ({ post }) => {
         onClick={() => setOpen(true)}
         className="cursor-pointer text-sm text-gray-400"
       >
-        View all 10 comments
+        View all {comment.length} comments
       </span>
       <CommentDialog open={open} setOpen={setOpen} />
       <div>
@@ -141,7 +194,7 @@ const Post = ({ post }) => {
           onChange={changeEventHandler}
           className="outline-none text-sm w-full"
         />
-        {text && <span className="text-[#38ADF8]">Post</span>}
+        {text && <span onClick={commentHandler} className="text-[#38ADF8] cursor-pointer">Post</span>}
       </div>
     </div>
   );
