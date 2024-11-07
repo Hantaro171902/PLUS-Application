@@ -21,6 +21,12 @@ const Post = ({ post }) => {
   const [comment, setComment] = useState(post.comments);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (setSelectedPost) {
+      setComment(setSelectedPost.comments);
+    }
+  }, [setSelectedPost]);
+
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {
@@ -117,7 +123,10 @@ const Post = ({ post }) => {
             <AvatarImage src={post.author?.profilePicture} alt="post_image" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <h1>{post.author?.username}</h1>
+          <div className="flex items-center gap-3">
+            <h1>{post.author?.username}</h1>
+            {user?._id === post.author._id && <Badge variant="secondary">Author</Badge>}
+          </div>
         </div>
         <Dialog className="flex flex-col items-center text-sm text-center">
           <DialogTrigger asChild>
@@ -183,15 +192,19 @@ const Post = ({ post }) => {
         <span className="font-medium mr-2">{post.author?.username}</span>
         {post.caption}
       </p>
-      <span
-        onClick={() => {
-          dispatch(setSelectedPost(post));
-          setOpen(true);
-        }}
-        className="cursor-pointer text-sm text-gray-400"
-      >
-        View all {comment.length} comments
-      </span>
+
+      {comment.length > 0 && (
+        <span
+          onClick={() => {
+            dispatch(setSelectedPost(post));
+            setOpen(true);
+          }}
+          className="cursor-pointer text-sm text-gray-400"
+        >
+          View all {comment.length} comments
+        </span>
+      )}
+
       <CommentDialog open={open} setOpen={setOpen} />
       <div>
         <input

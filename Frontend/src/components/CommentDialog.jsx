@@ -12,7 +12,7 @@ import { setPosts } from "@/redux/postSlice";
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
   const { seletedPost, posts } = useSelector((store) => store.post);
-  const { comment, setComment } = useState([]);
+  const { comment, setComment } = useState(seletedPost?.comments);
   const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
@@ -100,7 +100,7 @@ const CommentDialog = ({ open, setOpen }) => {
           </div>
           <hr />
           <div className="flex-1 overflow-y-auto max-h-96 p-4">
-            {seletedPost?.comments.map((comment) => (
+            {comment?.comments.map((comment) => (
               <Comment key={comment._id} comment={comment} />
             ))}
           </div>
