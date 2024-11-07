@@ -4,11 +4,16 @@ import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { FaAviato } from "react-icons/fa";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { MoreHorizontal } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import axios from "axios";
+import { setPosts } from "@/redux/postSlice";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
-  const { seletedPost } = useSelector((store) => store.post);
+  const { seletedPost, posts } = useSelector((store) => store.post);
+  const { comment, setComment } = useState([]);
+  const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
@@ -19,7 +24,6 @@ const CommentDialog = ({ open, setOpen }) => {
     }
   };
 
-  
   const sendMessageHandler = async () => {
     try {
       const res = await axios.post(
@@ -34,7 +38,14 @@ const CommentDialog = ({ open, setOpen }) => {
       );
       console.log(res.data);
       if (res.data.success) {
-       
+        const updateCommentData = [...comment, res.data.comment];
+        setComment(updateCommentData);
+
+        const updatedPostData = posts.map((p) =>
+          p._id === selectedPost._id ? { ...p, comments: updateCommentData } : p
+        );
+
+        dispatch(setPosts(updatedPostData));
 
         toast.success(res.data.message);
         setText("");
@@ -89,9 +100,9 @@ const CommentDialog = ({ open, setOpen }) => {
           </div>
           <hr />
           <div className="flex-1 overflow-y-auto max-h-96 p-4">
-            {
-              seletedPost?.comments.map((comment)=> <Comment key={comment._id} comment={comment}/>)
-            }
+            {seletedPost?.comments.map((comment) => (
+              <Comment key={comment._id} comment={comment} />
+            ))}
           </div>
           <div className="p-4">
             <div className="flex items-center gap-2">
