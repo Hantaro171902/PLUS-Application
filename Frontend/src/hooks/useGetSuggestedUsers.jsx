@@ -1,26 +1,26 @@
-import { setPosts } from ("@/redux/postSlice");
+import { setSuggestedUsers } from ("@/redux/postSlice");
 import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-const userGetAllPost = () => {
+const useGetSuggestedUsers = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    const fetchAllPost = async () => {
+    const fetchSuggestedUsers = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/v1/post/all', {
+        const res = await axios.get('http://localhost:8000/api/v1/user/suggested', {
           withCredentials: true,
         });
         if (res.data.success) {
           console.log(res.data.posts);
-          dispatch(setPosts(res.data.posts));
+          dispatch(setSuggestedUsers(res.data.users));
         }
       } catch (error) {
         console.log(error);
       }
     };
-    fetchAllPost();
+    fetchSuggestedUsers();
   }, []);
 };
 
-export default userGetAllPost;
+export default useGetSuggestedUsers;

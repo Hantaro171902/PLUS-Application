@@ -48,6 +48,8 @@ const LeftSidebar = () => {
       logoutHandler();
     } else if (textType === "Create") {
       createPostHandler();
+    } else if (textType === "Profile") {
+      navigate(`/profile/${user?._id}`);
     }
   };
 
