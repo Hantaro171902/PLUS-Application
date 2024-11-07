@@ -19,8 +19,29 @@ const CommentDialog = ({ open, setOpen }) => {
     }
   };
 
-  const sendMessageHandler = (async) => {
-    alert(text);
+  
+  const sendMessageHandler = async () => {
+    try {
+      const res = await axios.post(
+        `http://localhost:8000/api/v1/user/post/${selectedPost._id}/comment}`,
+        { text },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+      if (res.data.success) {
+       
+
+        toast.success(res.data.message);
+        setText("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -71,7 +92,6 @@ const CommentDialog = ({ open, setOpen }) => {
             {
               seletedPost?.comments.map((comment)=> <Comment key={comment._id} comment={comment}/>)
             }
-            comment ayenge
           </div>
           <div className="p-4">
             <div className="flex items-center gap-2">
@@ -80,7 +100,7 @@ const CommentDialog = ({ open, setOpen }) => {
                 placeholder="Add a comment..."
                 value={text}
                 onChange={changeEventHandler}
-                className="w-full outline-none border border-gray-300 p-2 rounded"
+                className="w-full outline-none border text-sm border-gray-300 p-2 rounded"
               />
               <Button
                 disabled={!text.trim}
