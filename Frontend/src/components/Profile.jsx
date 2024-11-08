@@ -14,7 +14,8 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
 
   const { userProfile } = useSelector((store) => store.auth);
-  const isLoggedInUserProfile = false;
+
+  const isLoggedInUserProfile = user?._id === userProfile?._id;
   const isFollowing = false;
 
   const handleTabChange = (tab) => {
@@ -44,12 +45,15 @@ const Profile = () => {
                 <span>{userProfile?.username}</span>
                 {isLoggedInUserProfile ? (
                   <>
-                    <Button
-                      varient="secondary"
-                      className="hover:bg-gray-200 h-8"
-                    >
-                      Edit Profile
-                    </Button>
+                    <Link to="/account/edit">
+                      <Button
+                        varient="secondary"
+                        className="hover:bg-gray-200 h-8"
+                      >
+                        Edit Profile
+                      </Button>
+                    </Link>
+
                     <Button
                       varient="secondary"
                       className="hover:bg-gray-200 h-8"
