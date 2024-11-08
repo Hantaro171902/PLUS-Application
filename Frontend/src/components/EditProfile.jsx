@@ -15,6 +15,8 @@ import {
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { setAuthUser } from "@/redux/authSlice";
+import { toast } from "sonner";
 
 const EditProfile = () => {
   const imageRef = useRef();
@@ -38,18 +40,42 @@ const EditProfile = () => {
   const { user } = useSelector((store) => store.auth);
 
   const editProfileHandler = async () => {
+    console.log(input);
     const formData = new FormData();
     formData.append("bio", input.bio);
-    formData.append("gender", input.profilePhoto);
-    if(input.profilePhoto){
+    formData.append("gender", input.gender);
+    if (input.profilePhoto) {
       formData.append("profilePhoto", input.profilePhoto);
     }
 
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:8000/api/v1/user/profile/edit');
+      const res = await axios.post(
+        "http://localhost:8000/api/v1/user/profile/edit",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        const updatedUserData = {
+          ...user,
+          bio: res.data.user?.bio,
+          profilePicture: res.data.user?.profilePicture,
+          gender: res.data.user.gender,
+        };
+        dispatch(setAuthUser(updatedUserData));
+        navigate(`/profile/${user?._id}`);
+        toast.success(res.data.message);
+      }
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -70,7 +96,7 @@ const EditProfile = () => {
               </span>
             </div>
           </div>
-          <input ref={imageRef} type="file" className="hidden" />
+          <input ref={imageRef} onChange={fileChangeHandler} type="file" className="hidden" />
           <Button
             onClick={() => imageRef?.current.click()}
             className="bg-[#0095F6] h-8 hover:bg-[#318bc7]"
@@ -94,9 +120,9 @@ const EditProfile = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
-                <SelectItem value="light">Male</SelectItem>
-                <SelectItem value="dark">Female</SelectItem>
+              <SelectGroup>e
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
