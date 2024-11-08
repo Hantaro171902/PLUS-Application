@@ -3,6 +3,7 @@ import cloudinary from "../utils/cloudinary.js";
 import { Post } from "../model/post_model.js";
 import { User } from "../model/user_model.js";
 import { Comment } from "../model/comment.model.js";
+import { getReceiverSocketId } from "../socket/socket.js";
 
 export const addNewPost = async (req, res) => {
   try {
@@ -82,8 +83,8 @@ export const getUserPost = async (req, res) => {
         sort: { createAt: -1 },
         populate: {
           path: "author",
-          select: "username profilePicture"
-        }
+          select: "username profilePicture",
+        },
       });
     return res.status(200).json({
       posts,
@@ -109,6 +110,22 @@ export const likePost = async (req, res) => {
     await post.save();
 
     // implement socket io for real time notification
+    const user = await User.findById(likeHanUserId).select(
+      "username profilePicture"
+    );
+    const postOwnerId = post.author.toString();
+    if (postOwnerId !== likeHanUserId) {
+      //  emit a notification event
+      const notification = {
+        type: "like",
+        userId: likeHanUserId,
+        userDetails: user,
+        postId,
+        message: "Your post was liked",
+      };
+      const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+      io.to(postOwnerSocketId).emit("notification", notification);
+    }
     return res.status(200).json({ message: "Post liked", success: true });
   } catch (error) {
     console.log(error);
@@ -130,6 +147,23 @@ export const dislikePost = async (req, res) => {
     await post.save();
 
     // implement socket io for real time notification
+    const user = await User.findById(likeHanUserId).select(
+      "username profilePicture"
+    );
+    const postOwnerId = post.author.toString();
+    if (postOwnerId !== likeHanUserId) {
+      //  emit a notification event
+      const notification = {
+        type: "dislike",
+        userId: likeHanUserId,
+        userDetails: user,
+        postId,
+        message: "Your post was liked"
+      };
+      const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+      io.to(postOwnerSocketId).emit("notification", notification);
+    }
+
     return res.status(200).json({ message: "Post liked", success: true });
   } catch (error) {
     console.log(error);
@@ -151,12 +185,12 @@ export const addComment = async (req, res) => {
     const comment = await Comment.create({
       text,
       author: commentHanId,
-      post: postId
-    })
+      post: postId,
+    });
 
     await comment.populate({
-      path:'author',
-      select:"username profilePicture"
+      path: "author",
+      select: "username profilePicture",
     });
 
     post.comments.push(comment._id);
@@ -174,7 +208,8 @@ export const getCommentsOfPost = async (req, res) => {
   try {
     const postId = req.params.id;
     const comments = await Comment.find({ post: postId }).populate(
-      'author', 'username profilePicture'
+      "author",
+      "username profilePicture"
     );
 
     if (!comments)
