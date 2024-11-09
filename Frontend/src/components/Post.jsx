@@ -115,6 +115,17 @@ const Post = ({ post }) => {
       toast.error(error.response.data.message);
     }
   };
+
+  const bookmarkHandler = async () => {
+    try {
+      const res = await axios.post(
+        `http://localhost:8000/api/v1/post/${post?._id}/bookmark`
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="my-8 w-full max-w-sm mx-auto">
       <div className="flex items-center justify-between">
@@ -125,7 +136,9 @@ const Post = ({ post }) => {
           </Avatar>
           <div className="flex items-center gap-3">
             <h1>{post.author?.username}</h1>
-            {user?._id === post.author._id && <Badge variant="secondary">Author</Badge>}
+            {user?._id === post.author._id && (
+              <Badge variant="secondary">Author</Badge>
+            )}
           </div>
         </div>
         <Dialog className="flex flex-col items-center text-sm text-center">

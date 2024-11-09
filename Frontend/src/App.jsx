@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
+import { setLikeNotification } from "./redux/rtnSlice";
 
 const browserRouter = createBrowserRouter([
   {
@@ -47,8 +48,8 @@ const browserRouter = createBrowserRouter([
 ]);
 
 function App() {
-  const { user } = useSelector(store => store.auth);
-  const {socket} = useSelector(store=> store.socketio);
+  const { user } = useSelector((store) => store.auth);
+  const { socket } = useSelector((store) => store.socketio);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -65,11 +66,17 @@ function App() {
       socketio.on("getOnLineUsers", (onLineUsers) => {
         dispatch(setOnlineUsers(onLineUsers));
       });
+
+      socketio.on("notification", (notification) => {
+        dispatch(setLikeNotification(notification));
+      });
+
       return () => {
         socketio.close();
         dispatch(setSocket(null));
       };
-    } else if(socket) {
+      
+    } else if (socket) {
       socket?.close();
       dispatch(setSocket(null));
     }
