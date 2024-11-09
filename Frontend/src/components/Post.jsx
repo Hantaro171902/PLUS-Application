@@ -1,7 +1,7 @@
 import { DialogContent } from "@radix-ui/react-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogTrigger } from "./ui/dialog";
-import { Bookmark, MessageCircle, MoreHorizontal } from "lucide-react";
+import { BookKey, Bookmark, MessageCircle, MoreHorizontal } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -118,9 +118,14 @@ const Post = ({ post }) => {
 
   const bookmarkHandler = async () => {
     try {
-      const res = await axios.post(
-        `http://localhost:8000/api/v1/post/${post?._id}/bookmark`
+      const res = await axios.get(
+        `http://localhost:8000/api/v1/post/${post?._id}/bookmark`,
+        { withCredentials: true }
       );
+
+      if (res.data.success) {
+        toast.success(res.data.message);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -146,12 +151,15 @@ const Post = ({ post }) => {
             <MoreHorizontal className="cursor-pointer" />
           </DialogTrigger>
           <DialogContent>
-            <Button
-              variant="ghost"
-              className="cursor-pointer w-fit text-[#ED4956] font-bold"
-            >
-              Unfollow
-            </Button>
+            {post?.author?._id !== user?._id && (
+              <Button
+                variant="ghost"
+                className="cursor-pointer w-fit text-[#ED4956] font-bold"
+              >
+                Unfollow
+              </Button>
+            )}
+
             <Button variant="ghost" className="cursor-pointer w-fit">
               Add to favorites
             </Button>
@@ -198,7 +206,10 @@ const Post = ({ post }) => {
           />
           <Send className="cursor-pointer hover:text-gray-600" />
         </div>
-        <Bookmark className="cursor-pointer hover:text-gray-600" />
+        <Bookmark
+          onClick={bookmarkHandler}
+          className="cursor-pointer hover:text-gray-600"
+        />
       </div>
       <span className="font-medium block mb-2">{postLike} likes</span>
       <p>
