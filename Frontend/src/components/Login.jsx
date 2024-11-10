@@ -4,10 +4,10 @@ import { Button } from "./ui/button";
 import axios from "axios";
 import { toast } from "sonner";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
 
 const Login = () => {
@@ -17,6 +17,7 @@ const Login = () => {
     password: "",
   });
   const { loading, setLoading } = useState(false);
+  const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -39,7 +40,7 @@ const Login = () => {
         }
       );
       if (res.data.success) {
-        dispatch(setAuthUser(res.data.user))
+        dispatch(setAuthUser(res.data.user));
         navigate("/");
         toast.success(res.data.message);
         setInput({
@@ -54,6 +55,13 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  });
+  
   return (
     <div className="flex items-center w-screen h-screen justify-center">
       <form
